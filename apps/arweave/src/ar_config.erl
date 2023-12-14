@@ -137,10 +137,9 @@ parse_options([{<<"log_dir">>, Dir} | Rest], Config) when is_binary(Dir) ->
 parse_options([{<<"log_dir">>, Dir} | _], _) ->
 	{error, {bad_type, log_dir, string}, Dir};
 
-parse_options([{<<"metrics_dir">>, MetricsDir} | Rest], Config) when is_binary(MetricsDir) ->
-	parse_options(Rest, Config#config { metrics_dir = binary_to_list(MetricsDir) });
-parse_options([{<<"metrics_dir">>, MetricsDir} | _], _) ->
-	{error, {bad_type, metrics_dir, string}, MetricsDir};
+%% it's not used but I don't think we need to depricate it right away
+parse_options([{<<"metrics_dir">>, _} | Rest], Config) ->
+	parse_options(Rest, Config);
 
 parse_options([{<<"storage_modules">>, L} | Rest], Config) when is_list(L) ->
 	try
@@ -629,7 +628,7 @@ parse_atom_number({Name, Number}, Parsed) when is_binary(Name), is_number(Number
 	maps:put(binary_to_atom(Name), Number, Parsed);
 parse_atom_number({Key, Value}, Parsed) ->
 	?LOG_WARNING([{event, parse_config_bad_type},
-		{key, io_lib:format("~p", [Key])}, {value, iolib:format("~p", [Value])}]),
+		{key, io_lib:format("~p", [Key])}, {value, io_lib:format("~p", [Value])}]),
 	Parsed.
 
 parse_requests_per_minute_limit_by_ip(Input) ->
